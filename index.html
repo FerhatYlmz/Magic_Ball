@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Magic 8 Ball</title>
+<style>
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #453737; /* Açık mavi */
+  transition: background-color 0.5s ease; /* Yumuşak geçiş için */
+}
+
+#container {
+  width: 500px; /* Panel genişliği artırıldı */
+  height: 800px; /* Panel yüksekliği artırıldı */
+  border: none; /* Çerçeve kaldırıldı */
+  border-radius: 20px; /* Köşeler yuvarlatıldı */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: #423f3f; /* Kutu gri olsun */
+  box-shadow: 0 10px 20px rgba(223, 217, 217, 0.601); /* Gölge eklendi */
+}
+
+#top {
+  padding: 30px; /* Padding artırıldı */
+  text-align: center;
+  
+}
+
+#question {
+  width: calc(100% - 40px); /* Genişlik ayarlandı */
+  padding: 15px; /* Padding artırıldı */
+  border: 1px solid #ccc; /* Çerçeve eklendi */
+  border-radius: 10px; /* Köşeler yuvarlatıldı */
+  font-size: 16px; /* Yazı boyutu ayarlandı */
+  box-sizing: border-box; /* Kutu modeline dahil edildi */
+  outline: none; /* Odaklanıldığında çerçeve kaldırıldı */
+  transition: border-color 0.3s ease; /* Yumuşak geçiş için */
+}
+
+#question:focus {
+  border-color: #3498db; /* Odaklanıldığında çerçeve rengi değişti */
+}
+
+#ball-area {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+#ball {
+  width: 300px; /* Topun boyutu büyütüldü */
+  height: 300px; /* Topun boyutu büyütüldü */
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  background-color: #5c7e38; /* Başlangıç top rengi */
+  border: none; /* Çerçeve kaldırıldı */
+  transition: background-color 0.5s ease, transform 0.3s ease; /* Yumuşak geçişler eklendi */
+  box-shadow: 0 5px 10px rgba(228, 223, 223, 0.739); /* Gölge eklendi */
+}
+
+#ball:hover {
+  transform: scale(1.3); /* Üzerine gelindiğinde büyüt */
+}
+
+#answer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 24px; /* Yazı boyutu artırıldı */
+  line-height: 1.4; /* Satır yüksekliği ayarlandı */
+  text-align: center;
+  padding: 20px; /* Padding artırıldı */
+  /* word-break: break-word;  Kelime kaydırma özelliği kapatıldı */
+  font-family: 'Roboto', sans-serif; /* Modern font */
+}
+
+#bottom {
+  padding: 30px; /* Padding artırıldı */
+  text-align: center;
+}
+
+#history {
+  margin-top: 20px; /* Margin artırıldı */
+  font-size: 16px; /* Yazı boyutu ayarlandı */
+}
+</style>
+</head>
+<body>
+
+<div id="container">
+  <div id="top">
+    <h1>Sihirli Top</h1>
+    <input type="text" id="question" placeholder="Lütfen Sorunuzu Yazın Ve Topa Tıklayınız..."> <!-- Placeholder eklendi -->
+  </div>
+  <div id="ball-area">
+    <div id="ball" onclick="ask()">
+      <div id="answer"></div>
+    </div>
+  </div>
+  <div id="bottom">
+    <div id="history">
+      <b>Son Sorular:</b>
+      <ul id="question-history"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+const answers = [
+  "Evet, kesinlikle!❤️ ",
+  "Bana sorarsan, evet! ",
+  "Her şey yolunda gibi! ",
+  "Belki, kim bilir? ",
+  "Şimdilik bilemiyorum, sonra tekrar sor! ",
+  "Büyük ihtimalle, evet! ",
+  "Hiç sanmıyorum... ",
+  "Bence denemelisin! ",
+  "Bu konuda kararsızım... ",
+  "Belki başka zaman... ",
+  "Evet, ama dikkatli olmalısın! ",
+  "Bence harika bir fikir! ",
+  "Bu konuda şansını denemelisin! ",
+  "Maalesef, hayır... ",
+  "Bana sorarsan, hayır! ",
+  "Bu pek iyi bir fikir değil... ",
+  "Tekrar düşünmelisin... ",
+  "Bu konuda biraz daha bilgiye ihtiyacın var... ",
+  "Acele etme, yavaşça düşün... ",
+  "Kalbinin sesini dinle! ❤️"
+];
+
+let questionHistory = [];
+
+function adjustFontSize(element, maxWidth) {
+  let fontSize = 24;
+  element.style.fontSize = fontSize + "px";
+
+  while (element.offsetWidth > maxWidth) {
+    fontSize--;
+    element.style.fontSize = fontSize + "px";
+  }
+}
+
+function ask() {
+  const question = document.getElementById("question").value;
+  if (question.trim() === "") {
+    alert("Lütfen bir soru yazın!");
+    return;
+  }
+
+  const randomAnswerIndex = Math.floor(Math.random() * answers.length);
+  const answer = answers[randomAnswerIndex];
+
+  const answerElement = document.getElementById("answer");
+  answerElement.innerHTML = "";
+
+  const words = answer.split(" ");
+  let currentLine = "";
+
+  words.forEach(word => {
+    const testLine = currentLine + word + " ";
+    const testSpan = document.createElement("span");
+    testSpan.textContent = testLine;
+    answerElement.appendChild(testSpan);
+
+    if (testSpan.offsetWidth > 300) { // Topun genişliği
+      currentLine = word + " ";
+    } else {
+      currentLine = testLine;
+    }
+
+    answerElement.removeChild(testSpan);
+  });
+
+  const span = document.createElement("span");
+  span.textContent = currentLine;
+  answerElement.appendChild(span);
+
+  adjustFontSize(answerElement, 300); // Topun genişliği
+
+  const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+  document.getElementById("ball").style.backgroundColor = randomColor;
+  document.body.style.backgroundColor = randomColor;
+
+  questionHistory.push({ question, answer });
+  if (questionHistory.length > 3) {
+    questionHistory.shift();
+  }
+
+  const questionHistoryList = document.getElementById("question-history");
+  questionHistoryList.innerHTML = "";
+  questionHistory.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.question}: ${item.answer}`;
+    questionHistoryList.appendChild(li);
+  });
+
+  document.getElementById("question").value = "";
+}
+</script>
+
+</body>
+</html>
