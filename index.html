@@ -171,7 +171,7 @@ function ask() {
   words.forEach(word => {
     const testLine = currentLine + word + " ";
     const testSpan = document.createElement("span");
-    testSpan.textContent = testLine;
+    testSpan.textContent = testLine; 
     answerElement.appendChild(testSpan);
 
     if (testSpan.offsetWidth > 300) { // Topun genişliği
